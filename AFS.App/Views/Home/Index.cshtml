@@ -1,0 +1,50 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Yoda Translator</h1>
+    <form>
+        <input id="inputText" type="text" name="Input"/>
+        <input id="submitButton" type="submit" value="Submit" />
+    </form>
+    <br>
+    <p id="translation" class="h2 text-muted">Translation</p>
+</div>
+
+@section scripts {
+    <script>
+
+        function setTranslation(text) {
+            $('#translation').text(text);
+        }
+
+        $(function() {
+            $('#submitButton').click(async function(event) {
+                event.preventDefault();
+
+                const inputText = $('#inputText').val();
+                const params = { 'text': inputText };
+                try {
+                    const response = await axios(
+                        {
+                            method: 'get',
+                            url: '/api/Translation',
+                            params: params
+                        });
+                    setTranslation(response.data.translation);
+                    console.log(response);
+                }
+                catch (err) {
+                    if (err.response.status === 429) {
+                        setTranslation(err.response.data);
+                    }
+                    else { 
+                        setTranslation("Sorry, something went wrong");
+                        throw (e);
+                    }
+                }  
+            })
+        })
+    </script>
+}
