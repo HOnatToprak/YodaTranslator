@@ -15,7 +15,9 @@ namespace AFS.App
             {
                 options.UseSqlite(builder.Configuration.GetConnectionString("AFSDatabase"), b => b.MigrationsAssembly(typeof(Program).Assembly.GetName().Name));
             });
-            builder.Services.AddSingleton<IFunLanguageTranslationProvider, FunLanguageTranslationAPIProvider>();
+            builder.Services.AddMemoryCache();
+            builder.Services.AddSingleton<IFunLanguageTranslationProvider, CachedFunLanguageTranslationAPIProvider>(
+                x => ActivatorUtilities.CreateInstance<CachedFunLanguageTranslationAPIProvider>(x, new FunLanguageTranslationAPIProvider()));
             builder.Services.AddControllers();
             builder.Services.AddControllersWithViews();
 
